@@ -1,0 +1,107 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  identifier  String   @unique //nis/nip/username
+  name        String
+  email       String   @unique
+  password    String
+  role        Role     @default(MEMBER)
+
+  isResetPending Boolean @default(false) //true jika user request ganti password
+  pendingNewPassword String? //Menyimpan password baru (di-hash) sementara sampai di-ACC Admin
+
+  //relasi
+  transaction Transaction[]
+  favorites   Favorite[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Genre {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+
+  //relasi
+  books       Book[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Book {
+  id          Int       @id @default(autoincrement())
+  bookCode    String    @unique //code di buku perpus (misal: buku-001)
+  title       String
+  author      String
+  publisher   String?
+  coverImage  String? //menyimpan url/path gambar 
+  synopsis    String    @db.Text
+  stock       Int       @default(1) //jumlah buku yang tersedia
+
+  //relasi ke genre
+  genres      Genre[]
+
+  //relasi
+  transaction Transaction[]
+  favorites   Favorite[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Favorite {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  bookId      Int
+
+  //relasi
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book        Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, bookId])
+}
+
+model Transaction {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  bookId      Int
+
+  //enum untuk mengontroll alur acc admin
+  status      TransactionStatus @default(PENDING_BORROW)
+
+  //pencatatan waktu
+  borrowDate  DateTime?         // Tanggal dipinjam (Diisi otomatis saat Admin ACC Pinjam)
+  dueDate     DateTime?         // Tenggat waktu (Batas maksimal pengembalian)
+  returnDate  DateTime?         // Tanggal dikembalikan (Diisi otomatis saat Admin ACC Kembali)
+
+  //foreign keys
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book        Book              @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum TransactionStatus {
+  PENDING_BORROW  // Tahap 1: User klik pinjam, menunggu ACC Admin
+  BORROWED        // Tahap 2: Admin ACC, buku sah dipinjam (stok buku berkurang)
+  PENDING_RETURN  // Tahap 3: User bawa buku fisik ke perpus, nunggu ACC kembali
+  RETURNED        // Tahap 4: Admin terima buku fisik, transaksi selesai (stok bertambah)
+  REJECTED        // Opsional: Admin menolak peminjaman (misal user masih ada denda)
+}
