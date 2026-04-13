@@ -85,7 +85,8 @@ export const getPendingPasswordResets = async (req, res) => {
 export const processPasswordReset = async (req, res) => {
     try {
         const { id } = req.params;
-        const { action } = req.body; // 'APPROVE' atau 'REJECT'
+        const { action } = req.body;
+        const io = req.app.get("io");
 
         const user = await prisma.user.findUnique({ where: { id: Number(id) } });
         if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
@@ -93,23 +94,19 @@ export const processPasswordReset = async (req, res) => {
         if (action === 'APPROVE') {
             await prisma.user.update({
                 where: { id: Number(id) },
-                data: { 
-                    password: user.pendingNewPassword, 
-                    isResetPending: false, 
-                    pendingNewPassword: null 
-                }
+                data: { password: user.pendingNewPassword, isResetPending: false, pendingNewPassword: null }
             });
+            io.to(user.identifier).emit("reset_status", { approved: true, rejected: false });
             return res.json({ message: "Ganti password disetujui." });
         } else {
             await prisma.user.update({
                 where: { id: Number(id) },
                 data: { isResetPending: false, pendingNewPassword: null }
             });
+            io.to(user.identifier).emit("reset_status", { approved: false, rejected: true });
             return res.json({ message: "Ganti password ditolak." });
         }
-    } catch (error) {
-        res.status(500).json({ message: "Error", error: error.message });
-    }
+    } catch (error) { res.status(500).json({ message: "Error", error: error.message }); }
 };
 
 // GET: Lihat akun yang minta ACC
@@ -128,27 +125,22 @@ export const getPendingRegistrations = async (req, res) => {
 export const processRegistration = async (req, res) => {
     try {
         const { id } = req.params;
-        const { action } = req.body; // 'APPROVE' atau 'REJECT'
+        const { action } = req.body;
+        const io = req.app.get("io");
+
+        const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+        if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
 
         if (action === 'APPROVE') {
-            const user = await prisma.user.findUnique({ where: { id: Number(id) } });
-            if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
-
-            await prisma.user.update({
-                where: { id: Number(id) },
-                data: { isApproved: true }
-            });
-
-            const io = req.app.get("io");
-            io.to(user.identifier).emit("account_status", { approved: true });
-
+            await prisma.user.update({ where: { id: Number(id) }, data: { isApproved: true } });
+            io.to(user.identifier).emit("account_status", { approved: true, rejected: false });
             return res.status(200).json({ message: "Akun berhasil di-ACC!" });
         } else if (action === 'REJECT') {
-            // Jika ditolak, hapus pendaftarannya agar dia bisa daftar ulang nanti jika salah data
+            // Hapus akun jika ditolak
             await prisma.user.delete({ where: { id: Number(id) } });
+            // Kirim sinyal DITOLAK
+            io.to(user.identifier).emit("account_status", { approved: false, rejected: true });
             return res.status(200).json({ message: "Pendaftaran ditolak dan dihapus." });
         }
-    } catch (error) {
-        res.status(500).json({ message: "Error", error: error.message });
-    }
+    } catch (error) { res.status(500).json({ message: "Error", error: error.message }); }
 };

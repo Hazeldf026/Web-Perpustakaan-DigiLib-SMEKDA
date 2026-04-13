@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../../context/SocketContext';
+import { useSearchParams } from 'react-router-dom';
 
 const Request = () => {
-    const [activeTab, setActiveTab] = useState('buku');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'buku';
+
     const [bookRequests, setBookRequests] = useState([]);
     const [passRequests, setPassRequests] = useState([]);
     const token = localStorage.getItem('token');
@@ -26,6 +29,7 @@ const Request = () => {
 
     const socket = useSocket();
 
+    // Fetch data saat pertama kali halaman dibuka
     useEffect(() => { fetchRequests(); }, []);
 
     // Auto-refresh tabel saat ada request baru masuk via socket
@@ -82,20 +86,20 @@ const Request = () => {
             {/* TAB NAVIGASI */}
             <div className="flex gap-4 border-b border-gray-200 mb-6">
                 <button 
-                    onClick={() => setActiveTab('buku')}
-                    className={`pb-3 font-semibold px-2 ${activeTab === 'buku' ? 'border-b-2 border-[#4e8a68] text-[#4e8a68]' : 'text-gray-400'}`}
+                    onClick={() => setSearchParams({ tab: 'buku' })}
+                    className={`pb-3 font-semibold px-2 ${activeTab === 'buku' ? 'border-green-800 text-green-800' : ''}`}
                 >
                     Peminjaman & Pengembalian ({bookRequests.length})
                 </button>
                 <button 
-                    onClick={() => setActiveTab('password')}
-                    className={`pb-3 font-semibold px-2 ${activeTab === 'password' ? 'border-b-2 border-[#4e8a68] text-[#4e8a68]' : 'text-gray-400'}`}
+                    onClick={() => setSearchParams({ tab: 'password' })}
+                    className={`pb-3 font-semibold px-2 ${activeTab === 'password' ? 'border-green-800 text-green-800' : ''}`}
                 >
                     Reset Password ({passRequests.length})
                 </button>
                 <button 
-                    onClick={() => setActiveTab('register')}
-                    className={`pb-3 font-semibold px-2 ${activeTab === 'register' ? 'border-b-2 border-[#4e8a68] text-[#4e8a68]' : 'text-gray-400'}`}
+                    onClick={() => setSearchParams({ tab: 'register' })}
+                    className={`pb-3 font-semibold px-2 ${activeTab === 'register' ? 'border-green-800 text-green-800' : ''}`}
                 >
                     Pendaftaran Akun ({registerRequests.length})
                 </button>
@@ -105,7 +109,7 @@ const Request = () => {
             {activeTab === 'buku' && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 text-gray-500 text-sm border-b">
+                        <thead className="bg-gray-50 text-gray-500 text-sm border-b border-gray-200">
                             <tr>
                                 <th className="px-6 py-4">Peminjam</th>
                                 <th className="px-6 py-4">Buku</th>
@@ -116,7 +120,7 @@ const Request = () => {
                         <tbody className="divide-y">
                             {bookRequests.length === 0 ? (<tr><td colSpan="4" className="text-center py-8 text-gray-500">Tidak ada request.</td></tr>) : 
                             bookRequests.map(req => (
-                                <tr key={req.id}>
+                                <tr key={req.id} className="hover:bg-gray-50/50 border-gray-200">
                                     <td className="px-6 py-4 font-semibold">{req.user.name}</td>
                                     <td className="px-6 py-4 text-gray-600">{req.book.title}</td>
                                     <td className="px-6 py-4">
@@ -127,11 +131,11 @@ const Request = () => {
                                     <td className="px-6 py-4 text-right space-x-2">
                                         {req.status === 'PENDING_BORROW' ? (
                                             <>
-                                                <button onClick={() => handleBookAction(req.id, 'APPROVE_BORROW')} className="bg-[#4e8a68] text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-800">ACC Pinjam</button>
+                                                <button onClick={() => handleBookAction(req.id, 'APPROVE_BORROW')} className="bg-green-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-900">Terima Pinjam</button>
                                                 <button onClick={() => handleBookAction(req.id, 'REJECT_BORROW')} className="bg-red-100 text-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-200">Tolak</button>
                                             </>
                                         ) : (
-                                            <button onClick={() => handleBookAction(req.id, 'APPROVE_RETURN')} className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700">ACC Kembali</button>
+                                            <button onClick={() => handleBookAction(req.id, 'APPROVE_RETURN')} className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-700">Terima Kembali</button>
                                         )}
                                     </td>
                                 </tr>
@@ -145,7 +149,7 @@ const Request = () => {
             {activeTab === 'password' && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 text-gray-500 text-sm border-b">
+                        <thead className="bg-gray-50 text-gray-500 text-sm border-b border-gray-200">
                             <tr>
                                 <th className="px-6 py-4">Identifier / NIS</th>
                                 <th className="px-6 py-4">Nama User</th>
@@ -161,7 +165,7 @@ const Request = () => {
                                     <td className="px-6 py-4 font-semibold">{user.name}</td>
                                     <td className="px-6 py-4 text-gray-600">{user.email}</td>
                                     <td className="px-6 py-4 text-right space-x-2">
-                                        <button onClick={() => handlePassAction(user.id, 'APPROVE')} className="bg-[#4e8a68] text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-800">Izinkan</button>
+                                        <button onClick={() => handlePassAction(user.id, 'APPROVE')} className="bg-green-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-900">Izinkan</button>
                                         <button onClick={() => handlePassAction(user.id, 'REJECT')} className="bg-red-100 text-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-200">Tolak</button>
                                     </td>
                                 </tr>
@@ -174,7 +178,7 @@ const Request = () => {
             {activeTab === 'register' && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 text-gray-500 text-sm border-b">
+                        <thead className="bg-gray-50 text-gray-500 text-sm border-b border-gray-200">
                             <tr>
                                 <th className="px-6 py-4">NIS / Identifier</th>
                                 <th className="px-6 py-4">Nama Pendaftar</th>
@@ -190,7 +194,7 @@ const Request = () => {
                                     <td className="px-6 py-4 font-semibold">{req.name}</td>
                                     <td className="px-6 py-4 text-gray-600">{req.email}</td>
                                     <td className="px-6 py-4 text-right space-x-2">
-                                        <button onClick={() => handleRegisterAction(req.id, 'APPROVE')} className="bg-[#4e8a68] text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-800">ACC Akun</button>
+                                        <button onClick={() => handleRegisterAction(req.id, 'APPROVE')} className="bg-green-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-900">Terima Akun</button>
                                         <button onClick={() => handleRegisterAction(req.id, 'REJECT')} className="bg-red-100 text-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-200">Tolak (Hapus)</button>
                                     </td>
                                 </tr>

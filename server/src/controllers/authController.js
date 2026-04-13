@@ -42,7 +42,7 @@ try {
 
     const io = req.app.get("io");
         io.emit("new_request", { 
-            type: "REGISTER", 
+            type: 'register', 
             message: `Pendaftaran baru: ${user.name}` 
         });
 
@@ -128,8 +128,8 @@ export const forgotPassword = async (req, res) => {
         // Kirim notifikasi real-time ke admin
         const io = req.app.get("io");
         io.emit("new_request", {
-            type: "PASSWORD_RESET",
-            message: `Permintaan ganti password: ${user.name}`
+            type: 'password',
+            message: `Permintaan ganti password: ${identifier}`
         });
 
         res.status(200).json({ message: "Permintaan reset password terkirim!" });

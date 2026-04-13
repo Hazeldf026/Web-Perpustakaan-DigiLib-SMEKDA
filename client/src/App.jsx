@@ -1,8 +1,13 @@
-import AppRoutes from './routes/AppRoutes'
+import ToasterConfig from './components/common/ToasterConfig';
+import AppRoutes from './routes/AppRoutes';
 
 const App = () => {
   return (
+    <>
+    < ToasterConfig/>
+    
     <AppRoutes />
+    </>
   )
 }
 

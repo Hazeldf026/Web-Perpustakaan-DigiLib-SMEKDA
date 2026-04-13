@@ -159,7 +159,7 @@ const BookDetail = () => {
                         <button 
                             onClick={() => setIsBorrowModalOpen(true)}
                             disabled={book.stock < 1}
-                            className={`flex-1 py-4 rounded-xl font-bold text-white shadow-lg transition transform hover:-translate-y-1 ${book.stock > 0 ? 'bg-[#4e8a68] hover:bg-green-800' : 'bg-gray-400 cursor-not-allowed'}`}
+                            className={`flex-1 py-4 rounded-xl font-bold text-white shadow-lg transition transform hover:-translate-y-1 ${book.stock > 0 ? 'bg-green-800 hover:bg-green-900' : 'bg-gray-400 cursor-not-allowed'}`}
                         >
                             {book.stock > 0 ? 'Pinjam Buku Ini' : 'Sedang Dipinjam'}
                         </button>
@@ -176,7 +176,7 @@ const BookDetail = () => {
             {isBorrowModalOpen && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
-                        <div className="bg-[#4e8a68] p-6 text-white text-center">
+                        <div className="bg-green-800 p-6 text-white text-center">
                             <h2 className="text-xl font-bold">Pengajuan Peminjaman</h2>
                             <p className="text-sm text-green-100 mt-1">Konfirmasi detail buku pilihanmu</p>
                         </div>
@@ -194,7 +194,7 @@ const BookDetail = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-gray-500">Stok Tersedia</p>
-                                        <p className="font-bold text-[#4e8a68]">{book.stock} Buku</p>
+                                        <p className="font-bold text-green-800">{book.stock} Buku</p>
                                     </div>
                                 </div>
                             </div>
@@ -209,7 +209,7 @@ const BookDetail = () => {
                                     required
                                     value={borrowDays}
                                     onChange={(e) => setBorrowDays(e.target.value)}
-                                    className="w-full text-center text-xl font-bold bg-gray-100 border-2 border-transparent outline-none focus:border-[#4e8a68] focus:bg-white rounded-xl px-4 py-3 transition"
+                                    className="w-full text-center text-xl font-bold bg-gray-100 border-2 border-transparent outline-none focus:border-green-800 focus:bg-white rounded-xl px-4 py-3 transition"
                                 />
                             </div>
 
@@ -232,7 +232,7 @@ const BookDetail = () => {
 
                             <div className="flex gap-3 mt-8">
                                 <button type="button" onClick={() => setIsBorrowModalOpen(false)} className="flex-1 py-3 text-gray-600 font-bold hover:bg-gray-100 rounded-xl transition">Batal</button>
-                                <button type="submit" disabled={isWeekendError || isSubmitting} className={`flex-1 py-3 font-bold text-white rounded-xl shadow-lg transition ${isWeekendError ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#4e8a68] hover:bg-green-800'}`}>
+                                <button type="submit" disabled={isWeekendError || isSubmitting} className={`flex-1 py-3 font-bold text-white rounded-xl shadow-lg transition ${isWeekendError ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-800 hover:bg-green-900'}`}>
                                     {isSubmitting ? 'Memproses...' : 'Kirim Request'}
                                 </button>
                             </div>

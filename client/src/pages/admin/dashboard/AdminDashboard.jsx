@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../../context/SocketContext';
+import { LibraryBig, Users, BookOpen, Bell, ClockFading } from 'lucide-react';
 
 const AdminDashboard = () => {
     const [data, setData] = useState({
@@ -40,10 +41,10 @@ const AdminDashboard = () => {
     }, [socket]);
 
     const statsCards = [
-        { title: "Total Koleksi", value: data.stats.totalBooks, icon: "📚", color: "bg-blue-50 text-blue-600" },
-        { title: "Anggota Aktif", value: data.stats.totalMembers, icon: "👥", color: "bg-green-50 text-green-600" },
-        { title: "Buku Dipinjam", value: data.stats.activeLoans, icon: "📖", color: "bg-purple-50 text-purple-600" },
-        { title: "Antrean Request", value: data.stats.totalPending, icon: "🔔", color: "bg-red-50 text-red-600" },
+        { title: "Total Koleksi", value: data.stats.totalBooks, icon: <LibraryBig />, color: "bg-blue-50 text-blue-600" },
+        { title: "Anggota Aktif", value: data.stats.totalMembers, icon: <Users />, color: "bg-green-50 text-green-600" },
+        { title: "Buku Dipinjam", value: data.stats.activeLoans, icon: <BookOpen />, color: "bg-purple-50 text-purple-600" },
+        { title: "Antrean Request", value: data.stats.totalPending, icon: <Bell />, color: "bg-red-50 text-red-600" },
     ];
 
     if (isLoading) return <div className="p-8 text-center text-gray-500">Memuat statistik...</div>;
@@ -78,7 +79,7 @@ const AdminDashboard = () => {
                             data.recentActivities.map((activity) => (
                                 <div key={activity.id} className="flex items-center gap-4">
                                     <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-sm">
-                                        🕒
+                                        <ClockFading />
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-800">

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
+import { Book, LayoutDashboard, NotebookPen, Scale, Users } from 'lucide-react';
+import LogoPutih from "../../assets/LogoPutih.png"
 
 const AdminNavbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [searchParams] = useSearchParams();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -23,24 +26,44 @@ const AdminNavbar = () => {
         if (!socket) return;
 
         socket.on("new_request", (data) => {
-            // 1. Tambah angka di badge
+            const currentTab = searchParams.get('tab') || 'buku';
+            const isOnTargetTab = location.pathname === '/admin/request' && currentTab === data.type;
+
+            if (isOnTargetTab) {
+                return; 
+            }
+
             setRequestCount(prev => prev + 1);
             
-            // 2. Munculkan Toast Notif kanan bawah
-            toast.success(data.message, {
-                duration: 5000,
-                position: 'bottom-right',
-                style: { background: '#4e8a68', color: '#fff', borderRadius: '15px' }
-            });
+            toast.custom((t) => (
+                <div 
+                    onClick={() => {
+                        navigate(`/admin/request?tab=${data.type}`); // Lempar ke tab yang spesifik
+                        toast.dismiss(t.id);
+                        setRequestCount(0);
+                    }}
+                    className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-sm w-full bg-green-800 shadow-2xl rounded-2xl pointer-events-auto flex cursor-pointer transform transition-all hover:scale-105 p-4`}
+                >
+                    <div className="flex-1 text-white">
+                        <p className="text-sm font-black">Notifikasi Baru! 🔔</p>
+                        <p className="mt-1 text-sm text-green-100">{data.message}</p>
+                    </div>
+                </div>
+            ), { duration: 5000, position: 'bottom-right' });
         });
 
         return () => socket.off("new_request");
-    }, [socket]);
+    }, [socket, location, searchParams, navigate]);
+
+    useEffect(() => {
+        if (location.pathname === '/admin/request') setRequestCount(0);
+    }, [location.pathname]);
 
     return (
-        <aside className="w-64 bg-[#4e8a68] text-white flex flex-col shadow-xl h-screen sticky top-0">
-            <div className="p-6 text-center border-b border-green-800/50">
-                <h2 className="text-2xl font-black tracking-wider">DigiLab</h2>
+        <aside className="w-64 bg-green-800 text-white flex flex-col shadow-xl h-screen sticky top-0">
+            <div className="p-6 text-center border-b border-green-900">
+                <img src={LogoPutih} alt="logo digilib" className="w-24 mx-auto block my-2" />
+                <h2 className="text-2xl font-black tracking-wider">DigiLib</h2>
                 <p className="text-sm text-green-200">Admin Panel</p>
             </div>
             
@@ -49,42 +72,42 @@ const AdminNavbar = () => {
                     to="/admin/dashboard" 
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition ${isActive('/admin/dashboard') ? 'bg-white/20 text-white' : 'text-green-100 hover:bg-white/5'}`}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <LayoutDashboard />
                     Dashboard
                 </Link>
                 <Link 
                     to="/admin/buku" 
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition ${isActive('/admin/buku') ? 'bg-white/20 text-white' : 'text-green-100 hover:bg-white/5'}`}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <Book />
                     Data Buku
                 </Link>
                 <Link 
                     to="/admin/anggota" 
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition ${isActive('/admin/anggota') ? 'bg-white/20 text-white' : 'text-green-100 hover:bg-white/5'}`}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <Users />
                     Data Anggota
                 </Link>
                 <Link 
                     to="/admin/transaksi" 
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition ${isActive('/admin/transaksi') ? 'bg-white/20 text-white' : 'text-green-100 hover:bg-white/5'}`}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <Scale />
                     Transaksi
                 </Link>
                 <Link 
-                    to="/admin/request" 
+                    to="/admin/request?tab=buku" 
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition ${isActive('/admin/request') ? 'bg-white/20 text-white' : 'text-green-100 hover:bg-white/5'}`}
-                    >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                >
+                    <NotebookPen />
                     Request
+                    {/* Titik Merah di dalam Tombol, di sebelah tulisan */}
                     {requestCount > 0 && (
-                        <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center animate-bounce">
-                            {requestCount}
+                        <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow-md">
+                            {requestCount} Baru
                         </span>
                     )}
-                    <Toaster />
                 </Link>
             </nav>
 
@@ -94,6 +117,7 @@ const AdminNavbar = () => {
                     Logout
                 </button>
             </div>
+            <Toaster />
         </aside>
     );
 };

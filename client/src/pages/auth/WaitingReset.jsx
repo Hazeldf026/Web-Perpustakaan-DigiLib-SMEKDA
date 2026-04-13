@@ -1,62 +1,77 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useSocket } from '../../context/SocketContext';
+import { Check, Hourglass, X } from 'lucide-react';
 
-const WaitingReset = () => {
+const WaitingApproval = () => {
     const { identifier } = useParams();
     const navigate = useNavigate();
-    const [isApproved, setIsApproved] = useState(false);
+    const socket = useSocket();
+    
+    const [status, setStatus] = useState('pending'); // 'pending' | 'approved' | 'rejected'
 
     useEffect(() => {
-        // Fungsi untuk cek status ke server
+        if (!socket) return;
+        socket.emit("join_room", identifier);
+
+        socket.on("reset_status", (data) => {
+            if (data.approved) setStatus('approved');
+            if (data.rejected) setStatus('rejected');
+        });
+
+        // Polling Fallback
         const checkStatus = async () => {
             try {
                 const res = await fetch(`http://localhost:5000/api/auth/reset-status/${identifier}`);
-                const data = await res.json();
-                if (data.approved) {
-                    setIsApproved(true);
+                if (res.status === 404) {
+                    // Jika 404 (User tidak ditemukan), berarti Admin telah MENOLAK dan MENGHAPUS pendaftarannya
+                    setStatus('rejected');
+                } else if (res.ok) {
+                    const data = await res.json();
+                    if (data.approved) setStatus('approved');
                 }
-            } catch (error) {
-                console.error("Cek status gagal", error);
-            }
+            } catch (error) { console.error(error); }
         };
 
-        // Polling: Jalankan setiap 3 detik
         const interval = setInterval(() => {
-            if (!isApproved) checkStatus();
+            if (status === 'pending') checkStatus();
         }, 3000);
 
-        return () => clearInterval(interval);
-    }, [identifier, isApproved]);
+        return () => { socket.off("reset_status"); clearInterval(interval); };
+    }, [socket, identifier, status]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4 font-sans">
             <div className="bg-white p-10 rounded-[2.5rem] shadow-xl w-full max-w-md text-center border border-gray-100">
-                {!isApproved ? (
+                {status === 'pending' && (
                     <>
-                        <div className="w-20 h-20 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        </div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Menunggu Persetujuan</h2>
-                        <p className="text-gray-500 text-sm">Permintaan ganti password kamu sedang diproses oleh Admin. Jangan tutup halaman ini.</p>
+                        <div className="w-24 h-24 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse shadow-inner"><Hourglass /></div>
+                        <h2 className="text-2xl font-black text-gray-800 mb-4">Reset Password</h2>
+                        <p className="text-gray-500 text-sm">Menunggu persetujuan Admin...</p>
                     </>
-                ) : (
+                )}
+                
+                {status === 'approved' && (
                     <>
-                        <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        </div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Password Diganti!</h2>
+                        <div className="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"><Check size={36} /></div>
+                        <h2 className="text-2xl font-black text-gray-800 mb-4">Password Diganti!</h2>
                         <p className="text-gray-500 text-sm mb-8">Admin telah menyetujui permintaanmu. Sekarang kamu bisa login dengan password baru.</p>
-                        <button 
-                            onClick={() => navigate('/login-user')}
-                            className="w-full bg-green-800 text-white font-bold py-4 rounded-full shadow-lg hover:bg-green-900 transition transform hover:-translate-y-1"
-                        >
-                            Kembali Ke Login
-                        </button>
+                        <button onClick={() => navigate('/login-user')} className="w-full bg-green-800 text-white font-bold py-4 rounded-full shadow-lg hover:bg-green-900 transition">Masuk Sekarang</button>
+                    </>
+                )}
+
+                {status === 'rejected' && (
+                    <>
+                        <div className="w-24 h-24 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"><X size={34} /></div>
+                        <h2 className="text-2xl font-black text-gray-800 mb-4">Pendaftaran Ditolak</h2>
+                        <div className="bg-red-50 text-red-800 p-4 rounded-xl text-sm font-medium mb-6">
+                            Mohon maaf, permintaan atur ulang kata sandi Anda ditolak.
+                        </div>
+                        <Link to="/login-user" className="block w-full bg-red-500 text-white font-bold py-4 rounded-full shadow-lg hover:bg-red-700 transition">Daftar Ulang</Link>
                     </>
                 )}
             </div>
         </div>
     );
 };
-
-export default WaitingReset;
+export default WaitingApproval;

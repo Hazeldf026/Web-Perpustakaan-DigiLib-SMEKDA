@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSocket } from '../../../context/SocketContext';
 
 const UserTransaksi = () => {
     const [transactions, setTransactions] = useState([]);
@@ -18,7 +19,23 @@ const UserTransaksi = () => {
         }
     };
 
-    useEffect(() => { fetchTransactions(); }, []);
+    const socket = useSocket();
+
+    useEffect(() => {
+        fetchTransactions();
+
+        if (!socket) return;
+        
+        // Buat fungsi spesifik untuk auto-refresh
+        const handleUpdate = () => {
+            fetchTransactions();
+        };
+
+        socket.on("transaction_update", handleUpdate);
+
+        // Matikan HANYA fungsi handleUpdate saat halaman pindah
+        return () => socket.off("transaction_update", handleUpdate);
+    }, [socket]);
 
     // Fungsi Minta Kembalikan Buku
     const requestReturnBook = async (id) => {

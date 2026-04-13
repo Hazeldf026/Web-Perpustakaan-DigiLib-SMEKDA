@@ -46,7 +46,7 @@ const DataTransaksi = () => {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-50 text-gray-500 text-sm border-b">
+                    <thead className="bg-gray-50 text-gray-500 text-sm border-b border-gray-200">
                         <tr>
                             <th className="px-6 py-4">Peminjam</th>
                             <th className="px-6 py-4">Buku</th>
@@ -58,7 +58,7 @@ const DataTransaksi = () => {
                     <tbody className="divide-y">
                         {isLoading ? (<tr><td colSpan="5" className="text-center py-8">Memuat data...</td></tr>) :
                          transactions.map(trx => (
-                            <tr key={trx.id} className="hover:bg-gray-50">
+                            <tr key={trx.id} className="hover:bg-gray-50 border-gray-200">
                                 <td className="px-6 py-4 font-semibold text-gray-800">{trx.user.name}</td>
                                 <td className="px-6 py-4 text-gray-600">{trx.book.title}</td>
                                 <td className="px-6 py-4 text-sm text-gray-500">{formatDate(trx.borrowDate)}</td>

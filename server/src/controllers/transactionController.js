@@ -36,10 +36,12 @@ export const processTransaction = async (req, res) => {
         const { action } = req.body; // 'APPROVE_BORROW', 'REJECT_BORROW', 'APPROVE_RETURN'
 
         const transaction = await prisma.transaction.findUnique({ 
-            where: { id: Number(id) }, include: { book: true } 
+            where: { id: Number(id) }, include: { book: true, user: true } 
         });
 
         if (!transaction) return res.status(404).json({ message: "Transaksi tidak ditemukan" });
+
+        const io = req.app.get("io");
 
         // Logika Aksi Admin
         if (action === 'APPROVE_BORROW') {
@@ -60,6 +62,12 @@ export const processTransaction = async (req, res) => {
                     data: { stock: { decrement: 1 } }
                 })
             ]);
+
+            // Kirim notif ke user bahwa peminjaman disetujui
+            io.to(`user_${transaction.userId}`).emit("transaction_update", { 
+                message: `Peminjaman buku "${transaction.book.title}" kamu telah disetujui! 🎉` 
+            });
+
             return res.json({ message: "Peminjaman disetujui!" });
         } 
         
@@ -68,6 +76,12 @@ export const processTransaction = async (req, res) => {
                 where: { id: Number(id) },
                 data: { status: 'REJECTED' }
             });
+
+            // Kirim notif ke user bahwa peminjaman ditolak
+            io.to(`user_${transaction.userId}`).emit("transaction_update", { 
+                message: `Peminjaman buku "${transaction.book.title}" kamu ditolak oleh Admin.` 
+            });
+
             return res.json({ message: "Peminjaman ditolak." });
         }
 
@@ -83,6 +97,12 @@ export const processTransaction = async (req, res) => {
                     data: { stock: { increment: 1 } }
                 })
             ]);
+
+            // Kirim notif ke user bahwa pengembalian disetujui
+            io.to(`user_${transaction.userId}`).emit("transaction_update", { 
+                message: `Pengembalian buku "${transaction.book.title}" kamu telah dikonfirmasi! ✅` 
+            });
+
             return res.json({ message: "Pengembalian disetujui!" });
         }
 
@@ -130,6 +150,9 @@ export const requestBorrow = async (req, res) => {
             }
         });
 
+        const io = req.app.get("io");
+        io.emit("new_request", { type: 'buku', message: "Permintaan peminjaman baru masuk!" });
+
         res.status(201).json({ message: "Permintaan peminjaman berhasil dikirim ke Admin!", transaction: trx });
     } catch (error) {
         res.status(500).json({ message: "Terjadi kesalahan", error: error.message });
@@ -162,6 +185,9 @@ export const requestReturn = async (req, res) => {
             where: { id: Number(id) },
             data: { status: 'PENDING_RETURN' }
         });
+
+        const io = req.app.get("io");
+        io.emit("new_request", { type: 'buku', message: "Permintaan pengembalian buku masuk!" });
 
         res.status(200).json({ message: "Permintaan pengembalian dikirim ke Admin!" });
     } catch (error) {
