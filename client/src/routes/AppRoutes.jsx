@@ -17,6 +17,8 @@ import DataTransaksi from "../pages/admin/transactions/DataTransaksi";
 import UserTransaksi from "../pages/user/Dashboard/UserTransaksi";
 import RegisterUser from "../pages/auth/RegisterUser";
 import PendingApproval from "../pages/auth/PendingApproval";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import WaitingReset from "../pages/auth/WaitingReset";
 
 const AppRoutes = () => {
     return (
@@ -28,6 +30,8 @@ const AppRoutes = () => {
             <Route path="/login-admin" element={<LoginAdmin />} />
             <Route path="/register-user" element={<RegisterUser />} />
             <Route path="/pending-approval" element={<PendingApproval />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/waiting-reset/:identifier" element={<WaitingReset />} />
 
             <Route path="/admin" element={<AdminLayout />}>
                 {/* /admin/dashboard */}

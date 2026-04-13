@@ -84,3 +84,43 @@ try {
     res.status(500).json({ message: "Terjadi kesalahan server", error: error.message });
 }
 };
+
+export const forgotPassword = async (req, res) => {
+    try {
+        const { identifier, newPassword } = req.body;
+
+        const user = await prisma.user.findUnique({ where: { identifier } });
+        if (!user) return res.status(404).json({ message: "User tidak ditemukan!" });
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await prisma.user.update({
+            where: { identifier },
+            data: {
+                isResetPending: true,
+                pendingNewPassword: hashedPassword
+            }
+        });
+
+        res.status(200).json({ message: "Permintaan reset password terkirim!" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const checkResetStatus = async (req, res) => {
+    try {
+        const { identifier } = req.params;
+        const user = await prisma.user.findUnique({
+            where: { identifier },
+            select: { isResetPending: true }
+        });
+        
+        if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
+        
+        // Jika isResetPending sudah false, berarti sudah di-ACC (atau ditolak)
+        res.status(200).json({ approved: !user.isResetPending });
+    } catch (error) {
+        res.status(500).json({ message: "Error", error: error.message });
+    }
+};

@@ -70,6 +70,48 @@ export const deleteMember = async (req, res) => {
     }
 };
 
+export const getPendingPasswordResets = async (req, res) => {
+    try {
+        const users = await prisma.user.findMany({
+            where: { isResetPending: true },
+            select: { id: true, identifier: true, name: true, email: true }
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error", error: error.message });
+    }
+};
+
+export const processPasswordReset = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { action } = req.body; // 'APPROVE' atau 'REJECT'
+
+        const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+        if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
+
+        if (action === 'APPROVE') {
+            await prisma.user.update({
+                where: { id: Number(id) },
+                data: { 
+                    password: user.pendingNewPassword, 
+                    isResetPending: false, 
+                    pendingNewPassword: null 
+                }
+            });
+            return res.json({ message: "Ganti password disetujui." });
+        } else {
+            await prisma.user.update({
+                where: { id: Number(id) },
+                data: { isResetPending: false, pendingNewPassword: null }
+            });
+            return res.json({ message: "Ganti password ditolak." });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error", error: error.message });
+    }
+};
+
 // GET: Lihat akun yang minta ACC
 export const getPendingRegistrations = async (req, res) => {
     try {
