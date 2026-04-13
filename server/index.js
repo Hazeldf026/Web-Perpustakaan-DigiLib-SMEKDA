@@ -15,10 +15,10 @@ import transactionRoutes from "./src/routes/transactionRoutes.js";
 import userTransactionRoutes from "./src/routes/userTransactionRoutes.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js";
 
-// 1. Load env vars
+// Load env vars
 dotenv.config();
 
-// 2. Inisialisasi App
+//  Inisialisasi App
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -47,11 +47,11 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 const PORT = process.env.PORT || 5000;
 
-// 3. Middleware
+//  Middleware
 app.use(cors()); 
 app.use(express.json()); 
 
-// 4. Test Route
+// Route
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/users", userRoutes);
@@ -61,20 +61,19 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/my-transactions", userTransactionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
+// Test Route
 app.get("/api/profil-saya", verifyToken, (req, res) => {
     // req.user ini didapat dari hasil kerja satpam verifyToken
     res.json({ message: "Selamat datang di profilmu!", user: req.user });
 });
-
 app.get("/api/data-rahasia-admin", verifyToken, isAdmin, (req, res) => {
     res.json({ message: "Selamat datang, Paduka Admin. Ini data rahasianya." });
 });
-
 app.get("/", (req, res) => {
   res.send("Server DigiLab SMEKDA is Running!");
 });
 
-// 5. Jalankan Server
+// Jalankan Server
 server.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

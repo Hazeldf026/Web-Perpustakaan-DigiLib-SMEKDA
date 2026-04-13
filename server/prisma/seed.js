@@ -31,10 +31,9 @@ async function main() {
     console.log("Memulai proses seeding genre... ⏳");
 
     for (const genreName of genres) {
-        // upsert: update jika ada, insert (create) jika belum ada
         await prisma.genre.upsert({
             where: { name: genreName },
-            update: {}, // Biarkan kosong, artinya tidak ada yang diubah jika data sudah ada
+            update: {},
             create: { name: genreName }
         });
     }
@@ -48,6 +47,5 @@ main()
         process.exit(1);
     })
     .finally(async () => {
-        // Tutup koneksi database setelah selesai
         await prisma.$disconnect();
     });

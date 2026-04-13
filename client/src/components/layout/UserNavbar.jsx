@@ -66,7 +66,7 @@ const UserNavbar = () => {
         <aside className="w-64 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0">
             <div className="p-6 text-center border-b border-gray-50">
                 <img src={LogoHijau} alt="logo digilib" className="w-24 mx-auto block my-2"/>
-                <h2 className="text-2xl font-black text-green-800 tracking-wider">DigiLab</h2>
+                <h2 className="text-2xl font-black text-green-800 tracking-wider">DigiLib</h2>
                 <p className="text-sm text-gray-400">Member Area</p>
             </div>
             
