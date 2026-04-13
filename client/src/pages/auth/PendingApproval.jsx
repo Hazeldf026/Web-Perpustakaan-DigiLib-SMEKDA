@@ -2,6 +2,25 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const PendingApproval = () => {
+    const socket = useSocket();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!socket) return;
+        
+        const user = JSON.parse(localStorage.getItem('temp_user_data')); 
+        socket.emit("join_room", user.identifier);
+
+        socket.on("account_status", (data) => {
+            if (data.approved) {
+                toast.success("Akun di-ACC! Mengalihkan...");
+                setTimeout(() => navigate('/login-user'), 2000);
+            }
+        });
+
+        return () => socket.off("account_status");
+    }, [socket, navigate]);
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#f8fafc] font-sans p-4">
             <div className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-md w-full text-center border border-gray-100">

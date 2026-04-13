@@ -131,10 +131,17 @@ export const processRegistration = async (req, res) => {
         const { action } = req.body; // 'APPROVE' atau 'REJECT'
 
         if (action === 'APPROVE') {
+            const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+            if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
+
             await prisma.user.update({
                 where: { id: Number(id) },
                 data: { isApproved: true }
             });
+
+            const io = req.app.get("io");
+            io.to(user.identifier).emit("account_status", { approved: true });
+
             return res.status(200).json({ message: "Akun berhasil di-ACC!" });
         } else if (action === 'REJECT') {
             // Jika ditolak, hapus pendaftarannya agar dia bisa daftar ulang nanti jika salah data

@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+import http from "http";
+import { Server } from "socket.io";
 import { fileURLToPath } from "url";
 import authRoutes from "./src/routes/authRoutes.js";
 import { verifyToken, isAdmin } from "./src/middleware/authMiddleware.js";
@@ -17,6 +19,25 @@ dotenv.config();
 
 // 2. Inisialisasi App
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173", // URL Vite
+        methods: ["GET", "POST", "PUT"]
+    }
+});
+
+// Buat io dapat diakses di controller
+app.set("io", io);
+
+io.on("connection", (socket) => {
+    console.log("User connected:", socket.id);
+
+    // User bisa "join" ke room berdasarkan ID mereka agar dapat notif pribadi
+    socket.on("join_room", (userId) => {
+        socket.join(userId);
+    });
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +73,6 @@ app.get("/", (req, res) => {
 });
 
 // 5. Jalankan Server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSocket } from '../../../context/SocketContext';
 
 const Request = () => {
     const [activeTab, setActiveTab] = useState('buku');
@@ -23,7 +24,18 @@ const Request = () => {
         }
     };
 
+    const socket = useSocket();
+
     useEffect(() => { fetchRequests(); }, []);
+
+    // Auto-refresh tabel saat ada request baru masuk via socket
+    useEffect(() => {
+        if (!socket) return;
+        socket.on('new_request', () => {
+            fetchRequests();
+        });
+        return () => socket.off('new_request');
+    }, [socket]);
 
     // Aksi Buku
     const handleBookAction = async (id, action) => {

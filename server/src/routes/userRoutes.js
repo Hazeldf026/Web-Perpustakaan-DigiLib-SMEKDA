@@ -9,11 +9,14 @@ router.use(verifyToken, isAdmin);
 
 router.get("/", getAllMembers);
 router.post("/", createMember);
+
+// Route spesifik HARUS di atas route dinamis /:id agar tidak tertimpa!
+router.get("/requests/password", getPendingPasswordResets);
+router.get("/requests/register", getPendingRegistrations);
+
 router.put("/:id", updateMember);
 router.delete("/:id", deleteMember);
-router.get("/requests/password", getPendingPasswordResets);
 router.put("/:id/reset-action", processPasswordReset);
-router.get("/requests/register", getPendingRegistrations);
 router.put("/:id/register-action", processRegistration);
 
 export default router;

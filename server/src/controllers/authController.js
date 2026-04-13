@@ -40,6 +40,12 @@ try {
     },
     });
 
+    const io = req.app.get("io");
+        io.emit("new_request", { 
+            type: "REGISTER", 
+            message: `Pendaftaran baru: ${user.name}` 
+        });
+
     res.status(201).json({ message: "Registrasi berhasil!", user });
 } catch (error) {
     // Handle Prisma unique constraint error
@@ -100,6 +106,13 @@ export const forgotPassword = async (req, res) => {
                 isResetPending: true,
                 pendingNewPassword: hashedPassword
             }
+        });
+
+        // Kirim notifikasi real-time ke admin
+        const io = req.app.get("io");
+        io.emit("new_request", {
+            type: "PASSWORD_RESET",
+            message: `Permintaan ganti password: ${user.name}`
         });
 
         res.status(200).json({ message: "Permintaan reset password terkirim!" });
