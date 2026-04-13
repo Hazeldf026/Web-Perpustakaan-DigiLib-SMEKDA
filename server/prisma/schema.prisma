@@ -49,6 +49,8 @@ model Book {
   synopsis    String    @db.Text
   stock       Int       @default(1) //jumlah buku yang tersedia
 
+  isRecommended Boolean   @default(false)
+
   //relasi ke genre
   genres      Genre[]
 

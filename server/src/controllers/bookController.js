@@ -4,7 +4,7 @@ import { prisma } from "../config/db.js";
 export const getAllBooks = async (req, res) => {
     try {
         const books = await prisma.book.findMany({
-            include: { genres: true },
+            include: { genres: true, favorites: true },
             orderBy: { createdAt: 'desc' } // Urutkan dari yang terbaru
         });
         res.status(200).json(books);
@@ -91,6 +91,30 @@ export const updateBook = async (req, res) => {
         res.status(200).json({ message: "Data buku berhasil diupdate!", book: updatedBook });
     } catch (error) {
         res.status(500).json({ message: "Gagal mengupdate buku", error: error.message });
+    }
+};
+
+// PUT: Toggle Rekomendasi Buku (Fitur "Pin")
+export const toggleRecommend = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Cari buku yang ingin diubah
+        const book = await prisma.book.findUnique({ where: { id: Number(id) } });
+        if (!book) return res.status(404).json({ message: "Buku tidak ditemukan" });
+
+        // Balikkan nilainya (toggle)
+        const updatedBook = await prisma.book.update({
+            where: { id: Number(id) },
+            data: { isRecommended: !book.isRecommended }
+        });
+
+        res.status(200).json({ 
+            message: updatedBook.isRecommended ? "Buku ditambahkan ke Rekomendasi!" : "Buku dihapus dari Rekomendasi", 
+            isRecommended: updatedBook.isRecommended 
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Gagal mengubah status rekomendasi", error: error.message });
     }
 };
 
