@@ -5,16 +5,19 @@ const Request = () => {
     const [bookRequests, setBookRequests] = useState([]);
     const [passRequests, setPassRequests] = useState([]);
     const token = localStorage.getItem('token');
+    const [registerRequests, setRegisterRequests] = useState([]);
 
     const fetchRequests = async () => {
         try {
-            const [bookRes, passRes] = await Promise.all([
+            const [bookRes, passRes, regRes] = await Promise.all([
                 fetch("http://localhost:5000/api/transactions/pending", { headers: { "Authorization": `Bearer ${token}` } }),
-                fetch("http://localhost:5000/api/users/requests/password", { headers: { "Authorization": `Bearer ${token}` } })
+                fetch("http://localhost:5000/api/users/requests/password", { headers: { "Authorization": `Bearer ${token}` } }),
+                fetch("http://localhost:5000/api/users/requests/register", { headers: { "Authorization": `Bearer ${token}` } })
             ]);
             
             if (bookRes.ok) setBookRequests(await bookRes.json());
             if (passRes.ok) setPassRequests(await passRes.json());
+            if (regRes.ok) setRegisterRequests(await regRes.json());
         } catch (error) {
             console.error("Gagal mengambil request:", error);
         }
@@ -46,6 +49,17 @@ const Request = () => {
         } catch (error) { console.error("Gagal memproses aksi:", error); }
     };
 
+    const handleRegisterAction = async (id, action) => {
+    try {
+        await fetch(`http://localhost:5000/api/users/${id}/register-action`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            body: JSON.stringify({ action })
+        });
+        fetchRequests(); // Refresh otomatis
+    } catch (error) { console.error(error); }
+};
+
     return (
         <div className="p-8">
             <div className="mb-8">
@@ -66,6 +80,12 @@ const Request = () => {
                     className={`pb-3 font-semibold px-2 ${activeTab === 'password' ? 'border-b-2 border-[#4e8a68] text-[#4e8a68]' : 'text-gray-400'}`}
                 >
                     Reset Password ({passRequests.length})
+                </button>
+                <button 
+                    onClick={() => setActiveTab('register')}
+                    className={`pb-3 font-semibold px-2 ${activeTab === 'register' ? 'border-b-2 border-[#4e8a68] text-[#4e8a68]' : 'text-gray-400'}`}
+                >
+                    Pendaftaran Akun ({registerRequests.length})
                 </button>
             </div>
 
@@ -131,6 +151,35 @@ const Request = () => {
                                     <td className="px-6 py-4 text-right space-x-2">
                                         <button onClick={() => handlePassAction(user.id, 'APPROVE')} className="bg-[#4e8a68] text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-800">Izinkan</button>
                                         <button onClick={() => handlePassAction(user.id, 'REJECT')} className="bg-red-100 text-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-200">Tolak</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {activeTab === 'register' && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50 text-gray-500 text-sm border-b">
+                            <tr>
+                                <th className="px-6 py-4">NIS / Identifier</th>
+                                <th className="px-6 py-4">Nama Pendaftar</th>
+                                <th className="px-6 py-4">Email</th>
+                                <th className="px-6 py-4 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                            {registerRequests.length === 0 ? (<tr><td colSpan="4" className="text-center py-8 text-gray-500">Tidak ada request pendaftaran.</td></tr>) : 
+                            registerRequests.map(req => (
+                                <tr key={req.id}>
+                                    <td className="px-6 py-4 font-mono font-bold text-gray-800">{req.identifier}</td>
+                                    <td className="px-6 py-4 font-semibold">{req.name}</td>
+                                    <td className="px-6 py-4 text-gray-600">{req.email}</td>
+                                    <td className="px-6 py-4 text-right space-x-2">
+                                        <button onClick={() => handleRegisterAction(req.id, 'APPROVE')} className="bg-[#4e8a68] text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-800">ACC Akun</button>
+                                        <button onClick={() => handleRegisterAction(req.id, 'REJECT')} className="bg-red-100 text-red-600 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-200">Tolak (Hapus)</button>
                                     </td>
                                 </tr>
                             ))}

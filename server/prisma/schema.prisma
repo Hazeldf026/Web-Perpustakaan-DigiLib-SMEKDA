@@ -18,6 +18,8 @@ model User {
   isResetPending Boolean @default(false) //true jika user request ganti password
   pendingNewPassword String? //Menyimpan password baru (di-hash) sementara sampai di-ACC Admin
 
+  isApproved          Boolean   @default(true)
+
   //relasi
   transaction Transaction[]
   favorites   Favorite[]

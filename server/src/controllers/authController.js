@@ -22,7 +22,7 @@ try {
     // 2. Cek apakah identifier (NIS/NIP) sudah dipakai?
     const existingIdentifier = await prisma.user.findUnique({ where: { identifier } });
     if (existingIdentifier) {
-    return res.status(400).json({ message: "Identifier (NIS/NIP) sudah terdaftar!" });
+    return res.status(400).json({ message: "NIS/NISN/NIP sudah terdaftar!" });
     }
 
     // 3. Acak password (Hashing)
@@ -36,6 +36,7 @@ try {
         email,
         password: hashedPassword,
         role: role || "MEMBER", // Default jadi MEMBER kalau tidak diisi
+        isApproved: false // <--- Kunci: Akun belum aktif
     },
     });
 
@@ -64,6 +65,11 @@ try {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
     return res.status(401).json({ message: "Password salah!" });
+    }
+
+    // TAMBAHKAN BLOK INI: Cek persetujuan Admin
+    if (user.role === 'MEMBER' && !user.isApproved) {
+        return res.status(403).json({ message: "Akun Anda belum di-ACC oleh Admin. Harap tunggu." });
     }
 
     // 3. Bikin Token (JWT)

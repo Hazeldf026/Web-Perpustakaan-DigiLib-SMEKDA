@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoJudul from "../../assets/LogoJudul.png"
 import Reading from "../../assets/reading.jpeg"
 
@@ -126,8 +126,8 @@ const LoginUser = () => {
 
                         {/* register */}
                         <div className="flex gap-1.5 text-sm justify-center pt-2">
-                            <p>Don't have an account?</p>
-                            <a href="#" className="text-green-700 underline font-bold hover:no-underline hover:text-black">Sign Up</a>
+                            <p>Belum punya akun?</p>
+                            <Link to="/register-user" className="text-green-700 underline font-bold hover:no-underline hover:text-black">Daftar</Link>
                         </div>
                     </form>
                 </div>

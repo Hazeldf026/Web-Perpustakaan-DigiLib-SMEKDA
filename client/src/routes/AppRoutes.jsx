@@ -15,6 +15,8 @@ import BookDetail from "../pages/user/Dashboard/BookDetail";
 import Request from "../pages/admin/request/Request";
 import DataTransaksi from "../pages/admin/transactions/DataTransaksi";
 import UserTransaksi from "../pages/user/Dashboard/UserTransaksi";
+import RegisterUser from "../pages/auth/RegisterUser";
+import PendingApproval from "../pages/auth/PendingApproval";
 
 const AppRoutes = () => {
     return (
@@ -24,6 +26,8 @@ const AppRoutes = () => {
             {/* auth */}
             <Route path="/login-user" element={<LoginUser />} />
             <Route path="/login-admin" element={<LoginAdmin />} />
+            <Route path="/register-user" element={<RegisterUser />} />
+            <Route path="/pending-approval" element={<PendingApproval />} />
 
             <Route path="/admin" element={<AdminLayout />}>
                 {/* /admin/dashboard */}
