@@ -214,9 +214,9 @@ const Discover = () => {
                 </>
             )}
 
-            <style jsx>{`
+            <style dangerouslySetInnerHTML={{ __html: `
                 .perspective-1000 { perspective: 1000px; }
-            `}</style>
+            `}} />
         </div>
     );
 };

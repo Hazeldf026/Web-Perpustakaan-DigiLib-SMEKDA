@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../../context/SocketContext';
+import { getUserId } from '../../../utils/auth';
 
 const UserTransaksi = () => {
     const [transactions, setTransactions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const token = localStorage.getItem('token');
+    const userId = getUserId();
 
     const fetchTransactions = async () => {
         try {
@@ -21,19 +23,32 @@ const UserTransaksi = () => {
 
     const socket = useSocket();
 
+    // Effect join room — re-join setiap kali socket (re)connect
+    useEffect(() => {
+        if (!socket || !userId) return;
+
+        const joinRoom = () => {
+            socket.emit("join_room", `user_${userId}`);
+            console.log(`[UserTransaksi] Joined room: user_${userId}`);
+        };
+
+        socket.on('connect', joinRoom);
+        if (socket.connected) joinRoom();
+
+        return () => socket.off('connect', joinRoom);
+    }, [socket]);
+
+    // Effect listen transaction_update → auto-refresh data
     useEffect(() => {
         fetchTransactions();
-
         if (!socket) return;
-        
-        // Buat fungsi spesifik untuk auto-refresh
+
         const handleUpdate = () => {
+            console.log('[UserTransaksi] transaction_update received, refreshing...');
             fetchTransactions();
         };
 
         socket.on("transaction_update", handleUpdate);
-
-        // Matikan HANYA fungsi handleUpdate saat halaman pindah
         return () => socket.off("transaction_update", handleUpdate);
     }, [socket]);
 

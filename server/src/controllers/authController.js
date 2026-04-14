@@ -13,38 +13,39 @@ try {
     return res.status(400).json({ message: "Semua field (name, identifier, email, password) wajib diisi!" });
     }
 
-    // 1. Cek apakah email sudah dipakai?
+    // Cek email
     const existingEmail = await prisma.user.findUnique({ where: { email } });
     if (existingEmail) {
     return res.status(400).json({ message: "Email sudah terdaftar!" });
     }
 
-    // 2. Cek apakah identifier (NIS/NIP) sudah dipakai?
+    // Cek Identifier
     const existingIdentifier = await prisma.user.findUnique({ where: { identifier } });
     if (existingIdentifier) {
     return res.status(400).json({ message: "NIS/NISN/NIP sudah terdaftar!" });
     }
 
-    // 3. Acak password (Hashing)
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4. Simpan ke Database
+    // Masukkan ke database
     const user = await prisma.user.create({
     data: {
         name,
         identifier,
         email,
         password: hashedPassword,
-        role: role || "MEMBER", // Default jadi MEMBER kalau tidak diisi
-        isApproved: false // <--- Kunci: Akun belum aktif
+        role: role || "MEMBER",
+        isApproved: false 
     },
     });
 
+    // Notifikasi real-time pendaftaran baru
     const io = req.app.get("io");
-        io.emit("new_request", { 
-            type: 'register', 
-            message: `Pendaftaran baru: ${user.name}` 
-        });
+    io.emit("new_request", { 
+        type: 'register', 
+        message: `Pendaftaran baru: ${user.name}` 
+    });
 
     res.status(201).json({ message: "Registrasi berhasil!", user });
 } catch (error) {
@@ -66,8 +67,7 @@ export const checkRegistrationStatus = async (req, res) => {
         });
 
         if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
-
-        // Jika isApproved true, berarti sudah di-ACC
+        
         res.status(200).json({ approved: user.isApproved });
     } catch (error) {
         res.status(500).json({ message: "Error", error: error.message });
@@ -102,7 +102,7 @@ try {
     { expiresIn: "1d" } // Token kadaluwarsa dalam 1 hari
     );
 
-    res.json({ message: "Login berhasil!", token, user: { name: user.name, role: user.role } });
+    res.json({ message: "Login berhasil!", token, user: { id: user.id, name: user.name, role: user.role } });
 } catch (error) {
     res.status(500).json({ message: "Terjadi kesalahan server", error: error.message });
 }

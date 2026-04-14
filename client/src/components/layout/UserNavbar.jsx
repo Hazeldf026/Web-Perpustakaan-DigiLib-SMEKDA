@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
+import { getUserId } from '../../utils/auth';
 import LogoHijau from "../../assets/logoHijau.png"
 import { Compass, Grid2x2, Heart, Scale } from 'lucide-react';
 
@@ -9,29 +10,51 @@ const UserNavbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const socket = useSocket();
+    const locationRef = useRef(location);
 
     const [trxBadge, setTrxBadge] = useState(0);
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
+    const userId = getUserId();
 
+    // Update locationRef setiap kali location berubah, tanpa re-register listener
     useEffect(() => {
-        if (!socket || !user) return;
+        locationRef.current = location;
+    }, [location]);
 
-        // Gabung ke room berdasarkan ID/NIS user
-        socket.emit("join_room", `user_${user.id}`);
+    // Effect untuk join room — jalan setiap kali socket (re)connect
+    useEffect(() => {
+        if (!socket || !userId) return;
 
-        // Dengarkan jika ada update transaksi dari Admin
+        const joinRoom = () => {
+            socket.emit("join_room", `user_${userId}`);
+            console.log(`[Socket] Joined room: user_${userId} (socketId: ${socket.id})`);
+        };
+
+        // Emit join_room setiap kali connect (termasuk reconnect setelah server restart)
+        socket.on('connect', joinRoom);
+
+        // Jika socket sudah terkoneksi sebelum listener dipasang, join langsung
+        if (socket.connected) {
+            joinRoom();
+        }
+
+        return () => socket.off('connect', joinRoom);
+    }, [socket]);
+
+    // Effect untuk listen event transaction_update — tidak bergantung pada location
+    useEffect(() => {
+        if (!socket) return;
+
         const handleTransactionUpdate = (data) => {
-            // 2. Perbaiki Pengecekan URL Path (tambahkan .includes)
-            if (location.pathname.includes('/transaksi')) return;
+            // Gunakan locationRef agar selalu dapat nilai location terbaru
+            const currentPath = locationRef.current.pathname;
+            if (currentPath.includes('/user/dashboard/transaksi')) return;
 
             setTrxBadge(prev => prev + 1);
 
-            // Munculkan notifikasi
             toast.custom((t) => (
                 <div 
                     onClick={() => {
-                        navigate('/user/dashboard/transaksi'); // Pastikan path ini benar
+                        navigate('/user/dashboard/transaksi');
                         toast.dismiss(t.id);
                         setTrxBadge(0);
                     }}
@@ -46,12 +69,12 @@ const UserNavbar = () => {
         };
 
         socket.on("transaction_update", handleTransactionUpdate);
-
         return () => socket.off("transaction_update", handleTransactionUpdate);
-    }, [socket, user, location, navigate]);
+    }, [socket, navigate]);
 
+    // Reset badge saat user membuka halaman transaksi
     useEffect(() => {
-        if (location.pathname === '/user/transaksi') setTrxBadge(0);
+        if (location.pathname.includes('/user/dashboard/transaksi')) setTrxBadge(0);
     }, [location.pathname]);
 
     const handleLogout = () => {

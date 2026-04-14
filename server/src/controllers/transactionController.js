@@ -64,7 +64,9 @@ export const processTransaction = async (req, res) => {
             ]);
 
             // Kirim notif ke user bahwa peminjaman disetujui
-            io.to(`user_${transaction.userId}`).emit("transaction_update", { 
+            const targetRoom = `user_${transaction.userId}`;
+            console.log(`[Socket] Emitting transaction_update to room: ${targetRoom}`);
+            io.to(targetRoom).emit("transaction_update", { 
                 message: `Peminjaman buku "${transaction.book.title}" kamu telah disetujui! 🎉` 
             });
 
@@ -78,7 +80,9 @@ export const processTransaction = async (req, res) => {
             });
 
             // Kirim notif ke user bahwa peminjaman ditolak
-            io.to(`user_${transaction.userId}`).emit("transaction_update", { 
+            const targetRoom2 = `user_${transaction.userId}`;
+            console.log(`[Socket] Emitting transaction_update to room: ${targetRoom2}`);
+            io.to(targetRoom2).emit("transaction_update", { 
                 message: `Peminjaman buku "${transaction.book.title}" kamu ditolak oleh Admin.` 
             });
 
@@ -99,7 +103,9 @@ export const processTransaction = async (req, res) => {
             ]);
 
             // Kirim notif ke user bahwa pengembalian disetujui
-            io.to(`user_${transaction.userId}`).emit("transaction_update", { 
+            const targetRoom3 = `user_${transaction.userId}`;
+            console.log(`[Socket] Emitting transaction_update to room: ${targetRoom3}`);
+            io.to(targetRoom3).emit("transaction_update", { 
                 message: `Pengembalian buku "${transaction.book.title}" kamu telah dikonfirmasi! ✅` 
             });
 

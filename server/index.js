@@ -32,11 +32,16 @@ const io = new Server(server, {
 app.set("io", io);
 
 io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
+    console.log(`[Socket] User connected: ${socket.id}`);
 
     // User bisa "join" ke room berdasarkan ID mereka agar dapat notif pribadi
-    socket.on("join_room", (userId) => {
-        socket.join(userId);
+    socket.on("join_room", (roomName) => {
+        socket.join(roomName);
+        console.log(`[Socket] ${socket.id} joined room: ${roomName}`);
+    });
+
+    socket.on("disconnect", (reason) => {
+        console.log(`[Socket] User disconnected: ${socket.id} (${reason})`);
     });
 });
 
