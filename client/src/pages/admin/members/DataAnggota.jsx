@@ -107,7 +107,7 @@ const DataAnggota = () => {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">Manajemen Anggota</h1>
-                    <p className="text-gray-500 text-sm mt-1">Daftar siswa dan guru terdaftar di DigiLab</p>
+                    <p className="text-gray-500 text-sm mt-1">Daftar siswa dan guru terdaftar di DigiLib</p>
                 </div>
                 <button onClick={openAddModal} className="bg-green-800 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-green-900 transition flex items-center gap-2">
                     <UserPlus />
