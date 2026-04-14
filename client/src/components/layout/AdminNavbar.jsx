@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
-import { Book, LayoutDashboard, NotebookPen, Scale, Users } from 'lucide-react';
+import { Book, LayoutDashboard, NotebookPen, Scale, Users, LogOut } from 'lucide-react';
 import LogoPutih from "../../assets/LogoPutih.png"
 
 const AdminNavbar = () => {
@@ -111,7 +111,7 @@ const AdminNavbar = () => {
 
             <div className="p-4">
                 <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <LogOut size={18} />
                     Logout
                 </button>
             </div>

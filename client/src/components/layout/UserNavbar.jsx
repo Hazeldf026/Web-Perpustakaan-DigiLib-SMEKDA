@@ -4,7 +4,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
 import { getUserId } from '../../utils/auth';
 import LogoHijau from "../../assets/logoHijau.png"
-import { Compass, Grid2x2, Heart, Scale } from 'lucide-react';
+import { Compass, Grid2x2, Heart, Scale, LogOut } from 'lucide-react';
 
 const UserNavbar = () => {
     const navigate = useNavigate();
@@ -129,7 +129,7 @@ const UserNavbar = () => {
 
                 <div className="p-4 border-t border-gray-50">
                     <button onClick={() => setIsLogoutModalOpen(true)} className="flex items-center justify-center gap-2 w-full px-4 py-3 text-red-500 font-bold rounded-xl hover:bg-red-50 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <LogOut size={18} />
                         Logout
                     </button>
                 </div>
@@ -139,7 +139,7 @@ const UserNavbar = () => {
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-100 p-4 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl transform transition-all text-center p-8">
                         <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            <LogOut size={36} />
                         </div>
                         <h3 className="text-2xl font-black text-gray-800 mb-2">Keluar Aplikasi?</h3>
                         <p className="text-gray-500 text-sm mb-8">Sesi kamu akan diakhiri dan kamu harus login kembali untuk mengakses perpustakaan.</p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { Heart } from 'lucide-react';
 
 const Favorit = () => {
     const [favorites, setFavorites] = useState([]);
@@ -49,7 +50,7 @@ const Favorit = () => {
             ) : favorites.length === 0 ? (
                 <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm mt-10">
                     <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <Heart size={32} />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">Belum Ada Favorit</h3>
                     <p className="text-gray-500 mb-6">Kamu belum menambahkan buku apa pun ke daftar favoritmu.</p>
@@ -69,10 +70,10 @@ const Favorit = () => {
                                 />
                                 {/* Label Favorit di sudut gambar */}
                                 <span className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md text-red-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    <Heart size={16} className="fill-current" />
                                 </span>
                             </div>
-                            <h3 className="font-bold text-gray-800 truncate group-hover:text-[#4e8a68] transition">{book.title}</h3>
+                            <h3 className="font-bold text-gray-800 truncate group-hover:text-green-800 transition">{book.title}</h3>
                             <p className="text-sm text-gray-500 truncate">{book.author}</p>
                         </Link>
                     ))}

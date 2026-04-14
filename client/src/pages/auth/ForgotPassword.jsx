@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 
 const ForgotPassword = () => {
     const [formData, setFormData] = useState({ identifier: '', newPassword: '', confirmPassword: '' });
@@ -48,11 +48,10 @@ const ForgotPassword = () => {
             {/* tombol back */}
             <button
                 onClick={() => navigate('/login-user')}
-                className="absolute top-4 left-4 text-gray-600 hover:text-green-700 transition"
+                className="flex absolute top-4 left-4 gap-2 font-semibold items-center text-gray-600 hover:text-green-800 transition"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
+                <ArrowLeft size={20} />
+                Kembali
             </button>
 
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl w-full max-w-md border border-gray-100">
@@ -111,7 +110,7 @@ const ForgotPassword = () => {
                         disabled={isLoading} 
                         className={`w-full text-white font-bold px-6 py-3 rounded-full shadow-lg transition mt-4 ${isLoading ? 'bg-gray-400' : 'bg-green-800 hover:bg-green-900'}`}
                     >
-                        {isLoading ? 'Memproses...' : 'Kirim Permintaan Ke Admin'}
+                        {isLoading ? 'Memproses...' : 'Kirim Permintaan'}
                     </button>
                 </form>
             </div>

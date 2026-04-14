@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 const GenreBooks = () => {
     const { id } = useParams();
@@ -42,8 +43,8 @@ const GenreBooks = () => {
     return (
         <div className="p-8 max-w-7xl mx-auto">
             {/* Tombol Kembali */}
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-[#4e8a68] font-semibold mb-8 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-green-800 font-semibold mb-8 transition">
+                <ArrowLeft size={20} />
                 Kembali
             </button>
 
@@ -62,11 +63,11 @@ const GenreBooks = () => {
                         <Link to={`/user/book/${book.id}`} key={book.id} className="group cursor-pointer block">
                             <div className="relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 mb-3 aspect-3/4 bg-gray-200">
                                 <img src={getImageUrl(book.coverImage)} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                <span className={`absolute top-3 left-3 px-2 py-1 text-[10px] font-bold text-white rounded-md shadow-md ${book.stock > 0 ? 'bg-[#4e8a68]' : 'bg-red-500'}`}>
+                                <span className={`absolute top-3 left-3 px-2 py-1 text-[10px] font-bold text-white rounded-md shadow-md ${book.stock > 0 ? 'bg-green-700' : 'bg-red-500'}`}>
                                     {book.stock > 0 ? 'Tersedia' : 'Habis'}
                                 </span>
                             </div>
-                            <h3 className="font-bold text-gray-800 truncate group-hover:text-[#4e8a68] transition">{book.title}</h3>
+                            <h3 className="font-bold text-gray-800 truncate group-hover:text-green-800 transition">{book.title}</h3>
                             <p className="text-sm text-gray-500 truncate">{book.author}</p>
                         </Link>
                     ))}

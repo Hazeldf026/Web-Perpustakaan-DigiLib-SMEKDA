@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { useSocket } from '../../../context/SocketContext';
 import { getUserId } from '../../../utils/auth';
+import { BookMarked } from 'lucide-react';
 
 const UserTransaksi = () => {
     const [transactions, setTransactions] = useState([]);
@@ -144,7 +145,7 @@ const UserTransaksi = () => {
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-100 p-4 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-8">
                         <div className="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path><polyline points="10 2 10 10 13 7 16 10 16 2"></polyline></svg>
+                            <BookMarked size={36} />
                         </div>
                         <h3 className="text-2xl font-black text-center text-gray-800 mb-4">Pengembalian Buku</h3>
                         

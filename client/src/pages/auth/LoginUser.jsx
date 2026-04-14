@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import LogoJudul from "../../assets/LogoJudul.png"
 import Reading from "../../assets/reading.jpeg"
 
@@ -62,11 +62,10 @@ const LoginUser = () => {
                 {/* tombol back */}
                 <button
                     onClick={() => navigate('/')}
-                    className="absolute top-4 left-4 text-gray-600 hover:text-green-700 transition"
+                    className="flex absolute top-4 left-4 gap-2 font-semibold items-center text-gray-600 hover:text-green-800 transition"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
-                    </svg>
+                    <ArrowLeft size={20} />
+                    Kembali
                 </button>
 
                 <div className="mb-8 text-center">
@@ -116,7 +115,7 @@ const LoginUser = () => {
 
                     {/* Forgot password */}
                     <div className="text-sm text-right pr-2">
-                        <Link to="/forgot-password" className="text-green-800 font-bold hover:underline">Forgot Password?</Link>
+                        <Link to="/forgot-password" className="text-green-800 font-bold hover:underline">Lupa Password?</Link>
                     </div>
 
                     {/* login button */}

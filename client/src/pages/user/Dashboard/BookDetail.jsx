@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { ArrowLeft, Heart } from 'lucide-react';
 
 const BookDetail = () => {
     const { id } = useParams();
@@ -118,8 +119,8 @@ const BookDetail = () => {
     return (
         <div className="p-8 max-w-6xl mx-auto">
             {/* Tombol Kembali (Tetap) */}
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-[#4e8a68] font-semibold mb-8 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-green-800 font-semibold mb-8 transition">
+                <ArrowLeft size={20} />
                 Kembali
             </button>
 
@@ -139,14 +140,14 @@ const BookDetail = () => {
                             </span>
                         </div>
                         <h1 className="text-4xl font-black text-gray-800 mb-2">{book.title}</h1>
-                        <p className="text-xl text-gray-500 font-medium mb-6">Karya: <span className="text-[#4e8a68]">{book.author}</span></p>
+                        <p className="text-xl text-gray-500 font-medium mb-6">Karya: <span className="text-green-800">{book.author}</span></p>
 
                         <div className="flex flex-wrap gap-2 mb-8">
                             {book.genres && book.genres.map(genre => (
                                 <Link 
                                     key={genre.id} 
                                     to={`/user/genre/${genre.id}`} 
-                                    className="bg-gray-100 text-gray-600 hover:text-[#4e8a68] hover:bg-green-50 px-3 py-1 rounded-full text-sm font-semibold border border-gray-200 hover:border-green-200 transition"
+                                    className="bg-gray-100 text-gray-600 hover:text-green-800 hover:bg-green-50 px-3 py-1 rounded-full text-sm font-semibold border border-gray-200 hover:border-green-200 transition"
                                 >
                                     {genre.name}
                                 </Link>
@@ -171,7 +172,7 @@ const BookDetail = () => {
                         
                         {/* Tombol Favorit (Tetap) */}
                         <button onClick={handleToggleFavorite} disabled={isFavLoading} className={`px-6 py-4 rounded-xl font-bold border transition flex items-center justify-center gap-2 ${isFavorited ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100' : 'bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-red-400'}`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isFavorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <Heart size={24} className={isFavorited ? "fill-current" : ""} />
                         </button>
                     </div>
                 </div>

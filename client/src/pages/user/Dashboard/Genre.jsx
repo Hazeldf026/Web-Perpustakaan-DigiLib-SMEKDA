@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Library } from 'lucide-react';
 
 const Genre = () => {
     const [genres, setGenres] = useState([]);
@@ -48,7 +49,7 @@ const Genre = () => {
                                 className={`${colorClass} relative h-32 rounded-2xl p-6 text-white overflow-hidden group shadow-md hover:shadow-xl transition transform hover:-translate-y-1`}
                             >
                                 <h2 className="text-xl font-bold relative z-10 group-hover:scale-110 transition origin-left">{genre.name}</h2>
-                                <svg className="absolute -right-4 -bottom-4 w-24 h-24 text-white opacity-20 group-hover:scale-150 transition duration-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22h20L12 2z"/></svg>
+                                <Library className="absolute -right-4 -bottom-4 w-24 h-24 text-white opacity-20 group-hover:scale-150 transition duration-500" />
                             </Link>
                         )
                     })}

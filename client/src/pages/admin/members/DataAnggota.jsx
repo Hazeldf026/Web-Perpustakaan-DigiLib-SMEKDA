@@ -1,4 +1,4 @@
-import { UserPlus } from 'lucide-react';
+import { UserPlus, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -167,7 +167,7 @@ const DataAnggota = () => {
                         <div className="h-32 bg-linear-to-r from-[#2c5f43] to-[#4e8a68]"></div>
                         
                         <button onClick={() => setIsDetailModalOpen(false)} className="absolute top-4 right-4 text-white hover:text-gray-200 transition bg-black/20 rounded-full p-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <X size={20} />
                         </button>
 
                         <div className="p-8 pt-0 flex flex-col items-center">
@@ -243,7 +243,7 @@ const DataAnggota = () => {
                             )}
                             <div className="flex justify-end gap-3 mt-8">
                                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Batal</button>
-                                <button type="submit" className="px-6 py-2 bg-[#4e8a68] text-white rounded-lg font-bold hover:bg-green-800">Simpan</button>
+                                <button type="submit" className="px-6 py-2 bg-green-800 text-white rounded-lg font-bold hover:bg-green-900">Simpan</button>
                             </div>
                         </form>
                     </div>
