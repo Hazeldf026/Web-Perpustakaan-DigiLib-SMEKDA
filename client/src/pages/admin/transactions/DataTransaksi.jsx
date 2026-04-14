@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 
 const DataTransaksi = () => {
     const [transactions, setTransactions] = useState([]);
@@ -14,6 +15,7 @@ const DataTransaksi = () => {
                 if (response.ok) setTransactions(await response.json());
             } catch (error) {
                 console.error("Gagal mengambil riwayat:", error);
+                toast.error("Gagal mengambil data transaksi");
             } finally {
                 setIsLoading(false);
             }

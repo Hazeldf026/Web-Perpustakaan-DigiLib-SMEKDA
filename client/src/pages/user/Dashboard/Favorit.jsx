@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const Favorit = () => {
     const [favorites, setFavorites] = useState([]);
@@ -19,6 +20,7 @@ const Favorit = () => {
                 }
             } catch (error) {
                 console.error("Gagal mengambil daftar favorit:", error);
+                toast.error("Gagal mengambil data favorit");
             } finally {
                 setIsLoading(false);
             }

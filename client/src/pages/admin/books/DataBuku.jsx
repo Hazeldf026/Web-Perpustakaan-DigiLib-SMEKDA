@@ -27,14 +27,22 @@ const DataBuku = () => {
         try {
             const response = await fetch("http://localhost:5000/api/books", { headers: { "Authorization": `Bearer ${token}` }});
             if (response.ok) setBooks(await response.json());
-        } catch (error) { console.error("Error:", error); } finally { setIsLoading(false); }
+        } catch (error) { 
+            console.error("Error:", error); 
+            toast.error("Gagal mengambil data buku");
+        } finally { 
+            setIsLoading(false); 
+        }
     };
 
     const fetchGenres = async () => {
         try {
             const response = await fetch("http://localhost:5000/api/genres", { headers: { "Authorization": `Bearer ${token}` }});
             if (response.ok) setGenres(await response.json());
-        } catch (error) { console.error("Error:", error); }
+        } catch (error) { 
+            console.error("Error:", error); 
+            toast.error("Gagal mengambil data genre");
+        }
     };
 
     useEffect(() => { fetchBooks(); fetchGenres(); }, []);
@@ -47,10 +55,13 @@ const DataBuku = () => {
             });
             if (response.ok) {
                 fetchBooks();
-                toast.success(data.message);
+                toast.success("Berhasil mengubah status rekomendasi");
+            } else {
+                toast.error("Gagal mengubah rekomendasi");
             }
         } catch (error) {
             console.error("Gagal mengubah rekomendasi:", error);
+            toast.error("Terjadi kesalahan server");
         }
     };
 
@@ -97,7 +108,10 @@ const DataBuku = () => {
                 const errorData = await response.json();
                 toast.error(errorData.message);
             }
-        } catch (error) { console.error("Error:", error); }
+        } catch (error) { 
+            console.error("Error:", error); 
+            toast.error("Terjadi kesalahan server");
+        }
     };
 
     const handleDelete = async (id) => {

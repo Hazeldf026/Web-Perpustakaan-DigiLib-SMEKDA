@@ -1,5 +1,6 @@
 import { UserPlus } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 
 const DataAnggota = () => {
     const [members, setMembers] = useState([]);
@@ -27,6 +28,7 @@ const DataAnggota = () => {
             if (response.ok) setMembers(data);
         } catch (error) {
             console.error("Gagal mengambil data anggota:", error);
+            toast.error("Gagal mengambil data anggota");
         } finally {
             setIsLoading(false);
         }
@@ -57,12 +59,14 @@ const DataAnggota = () => {
             if (response.ok) {
                 setIsModalOpen(false);
                 fetchMembers();
+                toast.success(isEditMode ? "Data anggota berhasil diperbarui!" : "Anggota baru berhasil ditambahkan!");
             } else {
                 const errorData = await response.json();
-                alert(errorData.message);
+                toast.error(errorData.message || "Gagal menyimpan data anggota");
             }
         } catch (error) {
             console.error("Terjadi kesalahan:", error);
+            toast.error("Terjadi kesalahan server");
         }
     };
 
@@ -73,9 +77,15 @@ const DataAnggota = () => {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
-            if (response.ok) fetchMembers();
+            if (response.ok) {
+                fetchMembers();
+                toast.success("Anggota berhasil dihapus!");
+            } else {
+                toast.error("Gagal menghapus anggota");
+            }
         } catch (error) {
             console.error("Gagal menghapus:", error);
+            toast.error("Terjadi kesalahan server");
         }
     };
 

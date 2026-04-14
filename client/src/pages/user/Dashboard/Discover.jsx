@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const Discover = () => {
     const [userName, setUserName] = useState('');
@@ -23,6 +24,7 @@ const Discover = () => {
                 if (response.ok) setBooks(data);
             } catch (error) {
                 console.error("Gagal mengambil buku:", error);
+                toast.error("Gagal mengambil data buku");
             } finally {
                 setIsLoading(false);
             }

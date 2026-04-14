@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const BookDetail = () => {
     const { id } = useParams();
@@ -26,7 +27,10 @@ const BookDetail = () => {
 
                 const favRes = await fetch(`http://localhost:5000/api/favorites/check/${id}`, { headers: { "Authorization": `Bearer ${token}` }});
                 if (favRes.ok) setIsFavorited((await favRes.json()).isFavorited);
-            } catch (error) { console.error("Gagal mengambil data:", error); } finally { setIsLoading(false); }
+            } catch (error) { 
+                console.error("Gagal mengambil data:", error); 
+                toast.error("Gagal memuat detail buku");
+            } finally { setIsLoading(false); }
         };
         fetchBookDetailAndFavoriteStatus();
     }, [id, navigate, token]);
@@ -62,9 +66,13 @@ const BookDetail = () => {
             if (response.ok) {
                 const data = await response.json();
                 setIsFavorited(data.isFavorited); 
+                toast.success(data.isFavorited ? "Buku ditambahkan ke favorit" : "Buku dihapus dari favorit");
+            } else {
+                toast.error("Gagal mengubah status favorit");
             }
         } catch (error) {
             console.error("Gagal mengubah favorit:", error);
+            toast.error("Terjadi kesalahan server");
         } finally {
             setIsFavLoading(false);
         }
@@ -85,12 +93,14 @@ const BookDetail = () => {
             
             if (response.ok) {
                 setIsBorrowModalOpen(false);
+                toast.success("Request peminjaman berhasil dikirim!");
                 navigate('/user/dashboard/transaksi'); 
             } else {
-                alert(data.message);
+                toast.error(data.message || "Gagal memproses peminjaman");
             }
         } catch (error) {
             console.error("Gagal request:", error);
+            toast.error("Terjadi kesalahan saat memproses request");
         } finally {
             setIsSubmitting(false);
         }

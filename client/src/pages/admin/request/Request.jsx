@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../../context/SocketContext';
 import { useSearchParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const Request = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +25,7 @@ const Request = () => {
             if (regRes.ok) setRegisterRequests(await regRes.json());
         } catch (error) {
             console.error("Gagal mengambil request:", error);
+            toast.error("Gagal mengambil data request");
         }
     };
 
@@ -41,36 +43,64 @@ const Request = () => {
 
     const handleBookAction = async (id, action) => {
         try {
-            await fetch(`http://localhost:5000/api/transactions/${id}/action`, {
+            const response = await fetch(`http://localhost:5000/api/transactions/${id}/action`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                 body: JSON.stringify({ action })
             });
-            fetchRequests();
-        } catch (error) { console.error("Gagal memproses aksi:", error); }
+
+            if (response.ok) {
+                fetchRequests();
+                toast.success("Aksi berhasil diproses");
+            } else {
+                const errorData = await response.json();
+                toast.error(errorData.message || "Gagal memproses aksi");
+            }
+        } catch (error) { 
+            console.error("Gagal memproses aksi:", error); 
+            toast.error("Terjadi kesalahan server");
+        }
     };
 
     const handlePassAction = async (id, action) => {
         try {
-            await fetch(`http://localhost:5000/api/users/${id}/reset-action`, {
+            const response = await fetch(`http://localhost:5000/api/users/${id}/reset-action`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                 body: JSON.stringify({ action })
             });
-            fetchRequests();
-        } catch (error) { console.error("Gagal memproses aksi:", error); }
+
+            if (response.ok) {
+                fetchRequests();
+                toast.success("Aksi reset password berhasil diproses");
+            } else {
+                toast.error("Gagal memproses aksi");
+            }
+        } catch (error) { 
+            console.error("Gagal memproses aksi:", error); 
+            toast.error("Terjadi kesalahan server");
+        }
     };
 
     const handleRegisterAction = async (id, action) => {
-    try {
-        await fetch(`http://localhost:5000/api/users/${id}/register-action`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-            body: JSON.stringify({ action })
-        });
-        fetchRequests(); 
-    } catch (error) { console.error(error); }
-};
+        try {
+            const response = await fetch(`http://localhost:5000/api/users/${id}/register-action`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ action })
+            });
+            
+            if (response.ok) {
+                fetchRequests(); 
+                toast.success("Aksi pendaftaran berhasil diproses");
+            } else {
+                toast.error("Gagal memproses aksi pendaftaran");
+            }
+        } catch (error) { 
+            console.error(error); 
+            toast.error("Terjadi kesalahan server");
+        }
+    };
 
     return (
         <div className="p-8">

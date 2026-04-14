@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../../context/SocketContext';
 import { LibraryBig, Users, BookOpen, Bell, ClockFading } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const AdminDashboard = () => {
     const [data, setData] = useState({
@@ -22,6 +23,7 @@ const AdminDashboard = () => {
             }
         } catch (error) {
             console.error("Gagal memuat dashboard:", error);
+            toast.error("Gagal memuat data dashboard");
         } finally {
             setIsLoading(false);
         }
