@@ -123,8 +123,8 @@ const UserTransaksi = () => {
                         transactions.map(trx => (
                             <tr key={trx.id} className="hover:bg-gray-50/50 transition">
                                 <td className="px-6 py-4">
-                                    <p className="font-bold text-gray-800">{trx.book.title}</p>
-                                    <p className="text-xs text-gray-500 mt-1">Kode: {trx.book.bookCode}</p>
+                                    <p className="font-bold text-gray-800">{trx.book?.title || <em className="text-gray-400">{"Buku Dihapus"}</em>}</p>
+                                    <p className="text-xs text-gray-500 mt-1">Kode: {trx.book?.bookCode || "-"}</p>
                                 </td>
                                 <td className="px-6 py-4 font-medium text-gray-600">{formatDate(trx.borrowDate)}</td>
                                 <td className="px-6 py-4 font-medium text-red-600">{formatDate(trx.dueDate)}</td>

@@ -90,7 +90,7 @@ const AdminDashboard = () => {
                                             <span className="font-bold">{activity.user.name}</span> {
                                                 activity.status === 'BORROWED' ? 'meminjam' : 
                                                 activity.status === 'RETURNED' ? 'mengembalikan' : 'mengajukan'
-                                            } buku <span className="font-semibold italic">"{activity.book.title}"</span>
+                                            } buku <span className="font-semibold italic">"{activity.book?.title || <em className="text-gray-400">{"Buku Dihapus"}</em>}"</span>
                                         </p>
                                         <p className="text-[10px] text-gray-400 mt-0.5">
                                             {new Date(activity.updatedAt).toLocaleString('id-ID')}

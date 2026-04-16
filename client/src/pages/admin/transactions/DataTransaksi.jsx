@@ -65,7 +65,7 @@ const DataTransaksi = () => {
                          transactions.map(trx => (
                             <tr key={trx.id} className="hover:bg-gray-50 border-gray-200">
                                 <td className="px-6 py-4 font-semibold text-gray-800">{trx.user.name}</td>
-                                <td className="px-6 py-4 text-gray-600">{trx.book.title}</td>
+                                <td className="px-6 py-4 text-gray-600">{trx.book?.title || <em className="text-gray-400">{"Buku Dihapus"}</em>}</td>
                                 <td className="px-6 py-4 text-sm text-gray-500">{formatDate(trx.borrowDate)}</td>
                                 <td className="px-6 py-4 text-sm text-gray-500">{formatDate(trx.returnDate)}</td>
                                 <td className="px-6 py-4">{getStatusBadge(trx.status)}</td>
