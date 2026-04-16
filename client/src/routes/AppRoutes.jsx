@@ -20,6 +20,7 @@ import WaitingApproval from "../pages/auth/WaitingApproval";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import WaitingReset from "../pages/auth/WaitingReset";
 import GenreBooks from "../pages/user/Dashboard/GenreBooks";
+import ProtectedRoute from "./ProtectedRoute";
 
 const AppRoutes = () => {
     return (
@@ -34,7 +35,7 @@ const AppRoutes = () => {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/waiting-reset/:identifier" element={<WaitingReset />} />
 
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path="/admin" element={<ProtectedRoute roleRequired="ADMIN"><AdminLayout /></ProtectedRoute>}>
                 <Route path="dashboard" element={<AdminDashboard />} /> 
                 <Route path="buku" element={<DataBuku />} />
                 <Route path="anggota" element={<DataAnggota />} />
@@ -42,13 +43,13 @@ const AppRoutes = () => {
                 <Route path="transaksi" element={<DataTransaksi />} />
             </Route>
 
-            <Route path="/user/dashboard" element={<UserLayout />}>
+            <Route path="/user/dashboard" element={<ProtectedRoute roleRequired="MEMBER"><UserLayout /></ProtectedRoute>}>
                 <Route path="discover" element={<Discover />} />
                 <Route path="genre" element={<Genre />} />
                 <Route path="favorit" element={<Favorit />} />
                 <Route path="transaksi" element={<UserTransaksi />} />
             </Route>
-            <Route path="/user" element={<UserLayout />}>
+            <Route path="/user" element={<ProtectedRoute roleRequired="MEMBER"><UserLayout /></ProtectedRoute>}>
                 <Route path="book/:id" element={<BookDetail />} />
                 <Route path="genre/:id" element={<GenreBooks />} />
             </Route>

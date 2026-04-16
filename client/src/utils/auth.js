@@ -16,3 +16,11 @@ export const getUserId = () => {
         return null;
     }
 };
+
+export const isAdminAuthenticated = () => {
+    return !!localStorage.getItem('admin_token');
+};
+
+export const isUserAuthenticated = () => {
+    return !!localStorage.getItem('user_token');
+};
