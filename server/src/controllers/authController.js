@@ -166,3 +166,41 @@ export const checkResetStatus = async (req, res) => {
         res.status(500).json({ message: "Error", error: error.message });
     }
 };
+
+export const loginQR = async (req, res) => {
+    try {
+        const { qrSecret } = req.body;
+
+        if (!qrSecret) return res.status(400).json({ message: "QR Secret tidak boleh kosong" });
+
+        // Cari user berdasarkan qrSecret yang di-scan
+        const user = await prisma.user.findUnique({ where: { qrSecret } });
+
+        if (!user) {
+            return res.status(401).json({ message: "QR Code tidak valid atau tidak dikenali!" });
+        }
+
+        if (!user.isApproved) {
+            return res.status(403).json({ message: "Akun kamu belum disetujui oleh Admin." });
+        }
+
+        // Jika valid, buatkan Token JWT (Logikanya sama persis dengan login biasa)
+        const token = jwt.sign(
+            { id: user.id, role: user.role, identifier: user.identifier }, 
+            process.env.JWT_SECRET || "rahasia_digilab", 
+            { expiresIn: '1d' }
+        );
+
+        // Hapus field sensitif sebelum dikirim ke frontend
+        const { password, qrSecret: secret, pendingNewPassword, ...safeUser } = user;
+
+        res.status(200).json({ 
+            message: "Login dengan QR Code berhasil!", 
+            token, 
+            user: safeUser 
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: "Terjadi kesalahan server", error: error.message });
+    }
+};

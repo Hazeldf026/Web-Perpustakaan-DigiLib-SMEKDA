@@ -18,6 +18,8 @@ model User {
   isResetPending Boolean @default(false) 
   pendingNewPassword String?
 
+  qrSecret    String?   @unique @default(uuid())
+
   isApproved          Boolean   @default(true)
 
   //relasi
