@@ -13,6 +13,10 @@ try {
     return res.status(400).json({ message: "Semua field (name, identifier, email, password) wajib diisi!" });
     }
 
+    if (!password || password.length < 8) {
+        return res.status(400).json({ message: "Password minimal harus 8 karakter!" });
+    }
+
     // Cek email
     const existingEmail = await prisma.user.findUnique({ where: { email } });
     if (existingEmail) {

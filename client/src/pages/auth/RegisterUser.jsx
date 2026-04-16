@@ -18,6 +18,11 @@ const RegisterUser = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
+        if (formData.password.length < 8) {
+            setError("Password minimal harus 8 karakter!");
+            return;
+        }
+
         if (formData.password !== formData.confirmPassword) {
             setError("Password dan Konfirmasi Password tidak cocok! Silakan periksa kembali.");
             return; 

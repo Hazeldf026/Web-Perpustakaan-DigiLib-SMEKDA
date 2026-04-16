@@ -17,6 +17,10 @@ export const createMember = async (req, res) => {
     try {
         const { identifier, name, email, password } = req.body;
 
+        if (password && password.length < 8) {
+            return res.status(400).json({ message: "Password minimal harus 8 karakter!" });
+        }
+
         const existingUser = await prisma.user.findUnique({ where: { identifier } });
         if (existingUser) {
             return res.status(400).json({ message: "NIS/Identifier sudah terdaftar!" });
